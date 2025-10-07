@@ -1,0 +1,135 @@
+
+{
+  "entities": {
+    "PetProfile": {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "title": "PetProfile",
+      "type": "object",
+      "description": "Represents a pet's profile for the memorial website.",
+      "properties": {
+        "name": {
+          "type": "string",
+          "description": "The name of the pet."
+        },
+        "tutors": {
+          "type": "string",
+          "description": "Name of the pet's owner(s)."
+        },
+        "animalType": {
+          "type": "string",
+          "description": "The type of animal (e.g., dog, cat)."
+        },
+        "sex": {
+          "type": "string",
+          "enum": ["Macho", "Fêmea"],
+          "description": "The sex of the pet."
+        },
+        "breed": {
+          "type": "string",
+          "description": "The breed of the pet."
+        },
+        "birthDate": {
+          "type": "string",
+          "format": "date-time",
+          "description": "The birth date of the pet in ISO 8601 format."
+        },
+        "cremationDate": {
+          "type": "string",
+          "format": "date-time",
+          "description": "The date the pet was cremated in ISO 8601 format."
+        },
+        "tree": {
+            "type": "string",
+            "description": "The memorial tree planted for the pet."
+        },
+        "shortDescription": {
+          "type": "string",
+          "description": "A short description or farewell message for the pet."
+        },
+        "fullDescription": {
+          "type": "string",
+          "description": "A full description or memorial text for the pet."
+        },
+        "imageUrls": {
+          "type": "array",
+          "description": "An array of 5 image URLs for the pet's gallery.",
+          "items": {
+            "type": "string",
+            "format": "uri"
+          },
+          "minItems": 5,
+          "maxItems": 5
+        }
+      },
+      "required": [
+        "name",
+        "tutors",
+        "animalType",
+        "sex",
+        "breed",
+        "birthDate",
+        "cremationDate",
+        "tree",
+        "shortDescription",
+        "fullDescription",
+        "imageUrls"
+      ]
+    },
+    "WebsiteContent": {
+      "title": "WebsiteContent",
+      "type": "object",
+      "description": "Represents a single piece of dynamic content for the website.",
+      "properties": {
+        "page": {
+          "type": "string",
+          "description": "The page this content belongs to (e.g., 'home', 'planos')."
+        },
+        "section": {
+          "type": "string",
+          "description": "The section within the page (e.g., 'hero', 'essencia')."
+        },
+        "element": {
+            "type": "string",
+            "description": "The specific element identifier (e.g., 'title', 'price', 'mainImage')."
+        },
+        "value": {
+          "type": "string",
+          "description": "The content value (text, URL, etc.)."
+        },
+        "type": {
+          "type": "string",
+          "enum": ["text", "image", "video", "price"],
+          "description": "The type of content."
+        }
+      },
+      "required": ["page", "section", "element", "value", "type"]
+    }
+  },
+  "auth": {
+    "providers": []
+  },
+  "firestore": {
+    "structure": [
+      {
+        "path": "/pet_profiles/{petProfileId}",
+        "definition": {
+          "entityName": "PetProfile",
+          "schema": {
+            "$ref": "#/backend/entities/PetProfile"
+          },
+          "description": "Stores pet profile information. This collection is publicly readable."
+        }
+      },
+      {
+        "path": "/website_content/{contentId}",
+        "definition": {
+            "entityName": "WebsiteContent",
+            "schema": {
+                "$ref": "#/backend/entities/WebsiteContent"
+            },
+            "description": "Stores dynamic content for various sections of the website. Publicly readable."
+        }
+      }
+    ]
+  }
+}

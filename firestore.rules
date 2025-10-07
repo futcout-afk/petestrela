@@ -1,0 +1,61 @@
+/**
+ * @file Firestore Security Rules
+ * @description This ruleset enforces a strict user-ownership model for pet memorial profiles.
+ * All data is nested under /users/{userId}/pet_memorial_profiles/{profileId}, ensuring that only the authenticated user can access and manage their respective profiles.
+ *
+ * Data Structure:
+ * - /users/{userId}/pet_memorial_profiles/{profileId}: Stores pet memorial profiles, with `userId` as the owner.
+ *
+ * Key Security Decisions:
+ * - Users can only manage their own pet memorial profiles.
+ * - Listing profiles is restricted to the owner only.
+ * - No administrative roles or shared access are defined.
+ *
+ * Authorization Independence: Profiles are directly associated with user IDs, simplifying security rules and improving scalability.
+ */
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    /**
+     * @description Controls access to pet memorial profiles stored under a user's document.
+     * @path /users/{userId}/pet_memorial_profiles/{profileId}
+     * @allow (create) - Authenticated user creates a new pet memorial profile under their user ID.
+     *   Request: { auth: { uid: 'user123' }, resource: { data: { id: 'user123' } } }
+     * @allow (get) - Authenticated user retrieves their own pet memorial profile.
+     *   Request: { auth: { uid: 'user123' } }
+     * @allow (update) - Authenticated user updates their own pet memorial profile.
+     *   Request: { auth: { uid: 'user123' } }
+     * @allow (delete) - Authenticated user deletes their own pet memorial profile.
+     *   Request: { auth: { uid: 'user123' } }
+     * @deny (create) - Authenticated user attempts to create a profile under someone else's ID.
+     *   Request: { auth: { uid: 'user123' }, resource: { data: { id: 'user456' } } }
+     * @principle Enforces document ownership for writes.
+     */
+    match /users/{userId}/pet_memorial_profiles/{profileId} {
+      // Helper function to check if the authenticated user is the owner of the document.
+      function isOwner(userId) {
+        return request.auth != null && request.auth.uid == userId;
+      }
+
+      // Helper function to check if the authenticated user is the owner of the document and it exists.
+      function isExistingOwner(userId) {
+        return isOwner(userId) && resource != null;
+      }
+
+      // Allow access only if the user is signed in.
+      function isSignedIn() {
+        return request.auth != null;
+      }
+
+      // Read Permissions
+      allow get: if isSignedIn() && isOwner(userId);
+      allow list: if isSignedIn() && isOwner(userId);
+
+      // Write Permissions
+      allow create: if isSignedIn() && isOwner(userId) && request.resource.data.id == userId;
+      allow update: if isExistingOwner(userId) && request.resource.data.id == resource.data.id;
+      allow delete: if isExistingOwner(userId);
+    }
+  }
+}
