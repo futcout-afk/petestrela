@@ -174,7 +174,7 @@ export default function MemorialPage() {
                 />
                 <div className="absolute inset-0 bg-black/50" />
                 <div className="relative container mx-auto max-w-7xl px-4 z-10">
-                    <h1 className="font-headline text-4xl md:text-6xl font-bold drop-shadow-md">Memorial Pet Estrela</h1>
+                    <h1 className="font-headline text-4xl md:text-5xl font-bold drop-shadow-md">Memorial Pet Estrela</h1>
                     <p className="mt-4 text-base max-w-2xl mx-auto drop-shadow-sm">
                         As cinzas de cada pet são depositadas junto à muda escolhida e recebem uma identificação única. Por meio do QR Code, é possível consultar essa numeração e acessar as informações sobre o animal e a árvore que guarda sua lembrança.
                     </p>
@@ -301,7 +301,4 @@ export default function MemorialPage() {
             </Dialog>
         </div>
     );
-
-    
-
-    
+}
